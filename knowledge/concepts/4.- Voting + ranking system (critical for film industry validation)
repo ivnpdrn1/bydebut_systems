@@ -1,0 +1,589 @@
+import React, { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Sparkles, GitBranch, BookOpen, Shuffle, AlertCircle, ArrowRight, Wand2, ThumbsUp, Flame, Clapperboard, MessageSquarePlus, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+
+const stories = [
+  {
+    id: "need-for-the-new",
+    title: "The Need for the New",
+    subtitle: "A system where continuity begins to replace renewal.",
+    summary:
+      "In a world where certain individuals do not disappear, institutions gradually stop expecting anyone new to begin.",
+    characters: ["Mateo Rivas", "Elena Varela", "Lucas Andrade", "Andrés Vale", "Gabriel Soria"],
+    rules: [
+      "People can remain beyond their natural narrative endpoint.",
+      "Memory accumulates instead of dissolving.",
+      "Roles tend to stabilize around those who continue.",
+    ],
+  },
+];
+
+const variableTypes = [
+  {
+    value: "existential",
+    label: "Existential",
+    description: "Change a rule of reality, life, time, memory, or mortality.",
+    icon: Sparkles,
+    examples: ["A character does not die", "Memory never fades", "No one can disappear"],
+  },
+  {
+    value: "character",
+    label: "Character",
+    description: "Add, remove, or transform a character in the story system.",
+    icon: BookOpen,
+    examples: ["Remove Mateo", "Add an outsider investigator", "Elena leaves the house"],
+  },
+  {
+    value: "structural",
+    label: "Structural",
+    description: "Alter power, institutions, roles, dependencies, or control.",
+    icon: GitBranch,
+    examples: ["All decisions must pass through Andrés", "No one can act alone", "The archive becomes public"],
+  },
+  {
+    value: "event",
+    label: "Event",
+    description: "Change a concrete event, sequence, or turning point.",
+    icon: Shuffle,
+    examples: ["The man survives Chapter 1", "Mateo acts immediately", "Elena interrupts the meeting earlier"],
+  },
+];
+
+const generatedExample = {
+  title: "Variation 014 — When Mateo Never Hesitates",
+  scene:
+    "Mateo leaves the table before Andrés finishes speaking. The man in the corridor is moved at once, and for a moment the house believes it has escaped repetition. But something else changes: the others, seeing that Mateo always arrives first, act even less than before.",
+  conflict:
+    "What looked like moral clarity deepens the dependence of everyone around him. Elena sees the rescue, but also sees the cost: no one else learns how to begin.",
+  consequence:
+    "The life is preserved, but the system becomes more fragile. Survival postpones the collapse; it does not resolve it.",
+  systemImpact:
+    [
+      "Centralization around Mateo intensifies.",
+      "Institutional passivity increases.",
+      "Future interruptions become harder because the pattern appears successful.",
+    ],
+};
+
+const rankingSeed = [
+  {
+    id: 1,
+    title: "When Mateo Never Hesitates",
+    author: "Iván P.",
+    variable: "Event",
+    votes: 128,
+    forks: 22,
+    discussion: 34,
+    cinematic: 95,
+    tension: 91,
+    feasibility: 88,
+  },
+  {
+    id: 2,
+    title: "The Version Where No One Dies",
+    author: "Elena V.",
+    variable: "Existential",
+    votes: 103,
+    forks: 19,
+    discussion: 41,
+    cinematic: 90,
+    tension: 84,
+    feasibility: 79,
+  },
+  {
+    id: 3,
+    title: "If Andrés Controlled Every Decision",
+    author: "Lucas A.",
+    variable: "Structural",
+    votes: 91,
+    forks: 12,
+    discussion: 27,
+    cinematic: 82,
+    tension: 89,
+    feasibility: 86,
+  },
+];
+
+function ScoreBadge({ icon: Icon, label, value }) {
+  return (
+    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
+      <div className="flex items-center gap-2 text-stone-600">
+        <Icon className="h-4 w-4" />
+        <span className="text-xs font-medium uppercase tracking-[0.18em]">{label}</span>
+      </div>
+      <div className="mt-2 font-serif text-2xl text-stone-900">{value}</div>
+    </div>
+  );
+}
+
+function RankingCard({ item, onVote }) {
+  const weightedScore = Math.round(
+    item.votes * 0.35 + item.forks * 1.5 + item.discussion * 0.5 + item.cinematic * 0.2 + item.tension * 0.15 + item.feasibility * 0.15
+  );
+
+  return (
+    <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary" className="rounded-full">{item.variable}</Badge>
+            <Badge variant="outline" className="rounded-full">Weighted score {weightedScore}</Badge>
+          </div>
+          <h4 className="mt-3 font-serif text-2xl">{item.title}</h4>
+          <p className="mt-1 text-sm text-stone-500">by {item.author}</p>
+        </div>
+
+        <Button onClick={() => onVote(item.id)} className="rounded-2xl">
+          <ThumbsUp className="mr-2 h-4 w-4" />
+          Vote
+        </Button>
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ScoreBadge icon={ThumbsUp} label="Votes" value={item.votes} />
+        <ScoreBadge icon={GitBranch} label="Forks" value={item.forks} />
+        <ScoreBadge icon={MessageSquarePlus} label="Discussion" value={item.discussion} />
+        <ScoreBadge icon={Clapperboard} label="Cinematic" value={`${item.cinematic}%`} />
+        <ScoreBadge icon={Flame} label="Tension" value={`${item.tension}%`} />
+        <ScoreBadge icon={TrendingUp} label="Feasibility" value={`${item.feasibility}%`} />
+      </div>
+    </div>
+  );
+}
+
+function VotingAndRankingSection() {
+  const [rankingItems, setRankingItems] = useState(rankingSeed);
+  const [sortBy, setSortBy] = useState("weighted");
+
+  const handleVote = (id) => {
+    setRankingItems((items) => items.map((item) => (item.id === id ? { ...item, votes: item.votes + 1 } : item)));
+  };
+
+  const sortedItems = useMemo(() => {
+    const weighted = (item) => item.votes * 0.35 + item.forks * 1.5 + item.discussion * 0.5 + item.cinematic * 0.2 + item.tension * 0.15 + item.feasibility * 0.15;
+    const items = [...rankingItems];
+
+    if (sortBy === "votes") return items.sort((a, b) => b.votes - a.votes);
+    if (sortBy === "cinematic") return items.sort((a, b) => b.cinematic - a.cinematic);
+    if (sortBy === "feasibility") return items.sort((a, b) => b.feasibility - a.feasibility);
+    return items.sort((a, b) => weighted(b) - weighted(a));
+  }, [rankingItems, sortBy]);
+
+  return (
+    <Card className="mt-6 rounded-3xl border-stone-200 bg-white shadow-sm">
+      <CardHeader>
+        <CardTitle className="font-serif text-2xl">Voting & Ranking</CardTitle>
+        <CardDescription>
+          Surface the strongest narrative variations through audience preference, discussion intensity, and cinematic viability.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+          <div className="rounded-2xl bg-stone-50 p-4 text-sm leading-6 text-stone-700">
+            The ranking model combines community approval with adaptation potential. This creates a signal useful not only for readers, but also for producers looking for emotionally strong, feasible narrative branches.
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-stone-700">Sort ranking by</label>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[220px] rounded-2xl">
+                <SelectValue placeholder="Choose ranking logic" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="weighted">Weighted score</SelectItem>
+                <SelectItem value="votes">Votes</SelectItem>
+                <SelectItem value="cinematic">Cinematic potential</SelectItem>
+                <SelectItem value="feasibility">Adaptation feasibility</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {sortedItems.map((item) => (
+            <RankingCard key={item.id} item={item} onVote={handleVote} />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function ByDebutCreateVariationUI() {
+  const [storyId, setStoryId] = useState(stories[0].id);
+  const [variableType, setVariableType] = useState("event");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("The man in Chapter 1 survives because Mateo acts without waiting for institutional confirmation.");
+  const [characterFocus, setCharacterFocus] = useState("Mateo Rivas");
+  const [tone, setTone] = useState("literary");
+  const [generated, setGenerated] = useState(false);
+
+  const selectedStory = useMemo(() => stories.find((s) => s.id === storyId) ?? stories[0], [storyId]);
+  const selectedVariableType = useMemo(
+    () => variableTypes.find((v) => v.value === variableType) ?? variableTypes[0],
+    [variableType]
+  );
+
+  const canGenerate = description.trim().length > 20;
+
+  const handleGenerate = () => {
+    if (!canGenerate) return;
+    setGenerated(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-900">
+      <div className="mx-auto max-w-7xl px-6 py-10 md:px-10 lg:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="mb-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]"
+        >
+          <div>
+            <div className="mb-4 flex items-center gap-3">
+              <Badge variant="secondary" className="rounded-full px-3 py-1 text-xs tracking-wide">
+                byDebut · Core Feature
+              </Badge>
+              <Badge variant="outline" className="rounded-full px-3 py-1 text-xs tracking-wide">
+                Create Variation
+              </Badge>
+            </div>
+            <h1 className="max-w-3xl font-serif text-4xl leading-tight md:text-5xl">
+              Change one condition. Let a new story begin.
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-stone-600 md:text-lg">
+              This interface is the narrative engine of byDebut: choose a base story, alter a variable, and generate a coherent new reality with scene, conflict, consequence, and system-level impact.
+            </p>
+          </div>
+
+          <Card className="rounded-3xl border-stone-200 bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="font-serif text-2xl">Base Story</CardTitle>
+              <CardDescription>Select the narrative system you want to transform.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Select value={storyId} onValueChange={setStoryId}>
+                <SelectTrigger className="rounded-2xl">
+                  <SelectValue placeholder="Choose a story" />
+                </SelectTrigger>
+                <SelectContent>
+                  {stories.map((story) => (
+                    <SelectItem key={story.id} value={story.id}>
+                      {story.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="rounded-2xl bg-stone-50 p-4">
+                <h3 className="font-serif text-xl">{selectedStory.title}</h3>
+                <p className="mt-1 text-sm text-stone-600">{selectedStory.subtitle}</p>
+                <p className="mt-4 text-sm leading-6 text-stone-700">{selectedStory.summary}</p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="mb-2 text-xs font-medium uppercase tracking-[0.22em] text-stone-500">Characters</p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedStory.characters.map((character) => (
+                      <Badge key={character} variant="outline" className="rounded-full">{character}</Badge>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="mb-2 text-xs font-medium uppercase tracking-[0.22em] text-stone-500">World Rules</p>
+                  <ul className="space-y-2 text-sm text-stone-700">
+                    {selectedStory.rules.map((rule) => (
+                      <li key={rule} className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-stone-400" />
+                        <span>{rule}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.95fr]">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+          >
+            <Card className="rounded-3xl border-stone-200 bg-white shadow-sm">
+              <CardHeader>
+                <CardTitle className="font-serif text-2xl">Create a Variation</CardTitle>
+                <CardDescription>Every variation must change a condition and produce consequences.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-stone-700">Variation Title</label>
+                    <Input
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="e.g. When Mateo Never Hesitates"
+                      className="rounded-2xl"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-stone-700">Variable Type</label>
+                    <Select value={variableType} onValueChange={setVariableType}>
+                      <SelectTrigger className="rounded-2xl">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {variableTypes.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <selectedVariableType.icon className="mt-1 h-5 w-5 text-stone-600" />
+                    <div>
+                      <h3 className="font-medium">{selectedVariableType.label}</h3>
+                      <p className="mt-1 text-sm leading-6 text-stone-600">{selectedVariableType.description}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {selectedVariableType.examples.map((example) => (
+                          <Badge key={example} variant="secondary" className="rounded-full">{example}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-stone-700">Character Focus</label>
+                    <Select value={characterFocus} onValueChange={setCharacterFocus}>
+                      <SelectTrigger className="rounded-2xl">
+                        <SelectValue placeholder="Select focus" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectedStory.characters.map((character) => (
+                          <SelectItem key={character} value={character}>
+                            {character}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-stone-700">Narrative Tone</label>
+                    <Select value={tone} onValueChange={setTone}>
+                      <SelectTrigger className="rounded-2xl">
+                        <SelectValue placeholder="Select tone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="literary">Literary</SelectItem>
+                        <SelectItem value="cinematic">Cinematic</SelectItem>
+                        <SelectItem value="psychological">Psychological</SelectItem>
+                        <SelectItem value="institutional">Institutional</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-stone-700">What changes in reality?</label>
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe the exact variable you want to change and what you want the system to test."
+                    className="min-h-[140px] rounded-2xl"
+                  />
+                  <div className="flex items-center gap-2 text-sm text-stone-500">
+                    <AlertCircle className="h-4 w-4" />
+                    The system should generate a scene, not a summary, and must show consequence.
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <Button
+                    onClick={handleGenerate}
+                    disabled={!canGenerate}
+                    className="rounded-2xl px-5"
+                  >
+                    <Wand2 className="mr-2 h-4 w-4" />
+                    Generate Variation
+                  </Button>
+                  <Button variant="outline" className="rounded-2xl px-5">
+                    Save Draft
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.1 }}
+            className="space-y-6"
+          >
+            <Card className="rounded-3xl border-stone-200 bg-white shadow-sm">
+              <CardHeader>
+                <CardTitle className="font-serif text-2xl">Generation Rules</CardTitle>
+                <CardDescription>Every valid output should preserve coherence while exposing consequence.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm leading-6 text-stone-700">
+                <div className="rounded-2xl bg-stone-50 p-4">
+                  <p className="font-medium text-stone-900">Required output structure</p>
+                  <ul className="mt-3 space-y-2">
+                    <li>• Scene</li>
+                    <li>• Conflict</li>
+                    <li>• Consequence</li>
+                    <li>• System Impact</li>
+                    <li>• Future Implications</li>
+                  </ul>
+                </div>
+                <div className="rounded-2xl bg-stone-50 p-4">
+                  <p className="font-medium text-stone-900">Narrative constraint</p>
+                  <p className="mt-2">A variation cannot simply change an event. It must reveal what the new condition does to people, institutions, and the story world over time.</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-3xl border-stone-200 bg-white shadow-sm">
+              <CardHeader>
+                <CardTitle className="font-serif text-2xl">Preview Output</CardTitle>
+                <CardDescription>{generated ? "Generated narrative preview" : "Example of a successful variation"}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.22em] text-stone-500">Variation</p>
+                  <h3 className="mt-2 font-serif text-2xl">{title || generatedExample.title}</h3>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.22em] text-stone-500">Scene</p>
+                  <p className="mt-2 leading-7 text-stone-700">{generatedExample.scene}</p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.22em] text-stone-500">Conflict</p>
+                  <p className="mt-2 leading-7 text-stone-700">{generatedExample.conflict}</p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.22em] text-stone-500">Consequence</p>
+                  <p className="mt-2 leading-7 text-stone-700">{generatedExample.consequence}</p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.22em] text-stone-500">System Impact</p>
+                  <ul className="mt-2 space-y-2 text-stone-700">
+                    {generatedExample.systemImpact.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-stone-500" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Button className="rounded-2xl">Publish Variation</Button>
+                  <Button variant="outline" className="rounded-2xl">Fork This Version</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+
+
+// --- COMMENT SECTION COMPONENT ---
+function CommentSection() {
+  const [comments, setComments] = useState([]);
+  const [input, setInput] = useState("");
+
+  const addComment = () => {
+    if (!input.trim()) return;
+    setComments([
+      ...comments,
+      {
+        id: Date.now(),
+        text: input,
+      },
+    ]);
+    setInput("");
+  };
+
+  return (
+    <Card className="rounded-3xl border-stone-200 bg-white shadow-sm mt-6">
+      <CardHeader>
+        <CardTitle className="font-serif text-2xl">Community Discussion</CardTitle>
+        <CardDescription>Evaluate, critique, and expand this variation.</CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        <div className="flex gap-2">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Write your insight, critique, or extension..."
+            className="rounded-2xl"
+          />
+          <Button onClick={addComment} className="rounded-2xl h-fit">
+            Comment
+          </Button>
+        </div>
+
+        <div className="space-y-3">
+          {comments.map((comment) => (
+            <div
+              key={comment.id}
+              className="rounded-2xl bg-stone-50 p-3 text-sm text-stone-700"
+            >
+              {comment.text}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- ADD THIS INSIDE YOUR MAIN RETURN (below Preview Output card) ---
+//
+            <CommentSection />
+            <VotingAndRankingSection />
+}
+
+//a Voting + Ranking system to the UI.
+
+It now includes:
+
+vote button per variation
+weighted ranking logic
+ranking cards with:
+votes
+forks
+discussion intensity
+cinematic potential
+tension
+adaptation feasibility
+sorting options for film-industry style evaluation
+
+This is the right direction because byDebut should not rank stories only by popularity, but by narrative strength + producibility.
