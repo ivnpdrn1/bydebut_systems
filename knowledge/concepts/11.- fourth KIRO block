@@ -1,0 +1,340 @@
+KIRO — FOURTH MASTER INSTRUCTION BLOCK
+PROJECT: byDebut
+GOAL: Harden the system to a jury-ready, production-grade demo with deployment, reliability, observability, auth scaffolding, analytics, and presentation polish.
+
+IMPORTANT:
+This phase builds on:
+1) Frontend MVP (Create → Review → Rank → Fork → Compare)
+2) Backend-ready data model + API contracts
+3) Real backend foundation (DB, endpoints, validation, ranking, lineage)
+
+Do NOT change core product behavior.
+Do NOT simplify flows.
+Focus on reliability, performance, UX clarity, and deployability.
+
+The output must be:
+- stable under demo conditions
+- accessible via a public URL
+- consistent across sessions
+- clearly explainable to judges
+
+==================================================
+1. PRIMARY OBJECTIVE
+==================================================
+
+Deliver a **public, stable, explainable demo** of byDebut that:
+
+- runs end-to-end (create → review → rank → fork → compare)
+- uses real backend + persistence
+- has deterministic demo data fallback
+- includes clear UI explanations of lineage and ranking
+- is resilient to transient failures
+- is easy for judges to understand in < 2 minutes
+
+==================================================
+2. DEPLOYMENT STRATEGY
+==================================================
+
+Choose a simple, reliable stack (adapt to repo):
+
+Frontend:
+- Vercel OR Netlify (preferred)
+Backend:
+- Railway OR Render OR Fly.io (preferred)
+Database:
+- PostgreSQL (managed, e.g., Supabase / Neon / Railway PG)
+
+Requirements:
+- separate envs: local + production
+- environment variables managed securely
+- CORS configured correctly
+- API base URL injected into frontend
+
+Deliver:
+- 1 canonical public URL (frontend)
+- backend URL (hidden or documented)
+
+==================================================
+3. DEMO MODE + FALLBACK STRATEGY
+==================================================
+
+Implement **dual-mode behavior**:
+
+A. LIVE MODE (default)
+- uses real backend + DB
+
+B. DEMO MODE (fallback)
+- deterministic dataset
+- no external dependency failures
+- toggle via:
+  - env var OR
+  - URL param (?demo=true)
+
+Rules:
+- if API fails → fallback to demo mode gracefully
+- demo mode must mirror real flows
+- DO NOT break UX if backend is slow/unavailable
+
+==================================================
+4. AUTH (LIGHTWEIGHT, NON-BLOCKING)
+==================================================
+
+Do NOT overbuild auth.
+
+Implement:
+- simple user identity layer (mock or lightweight)
+- session persistence (localStorage or cookie)
+- selectable user roles for demo:
+  - creator
+  - reviewer
+  - curator
+
+Optional (if fast):
+- Supabase Auth OR simple email-less identity
+
+Important:
+- flows must work without auth friction
+- identity must be visible (who created / who reviewed)
+
+==================================================
+5. RELIABILITY + HARDENING
+==================================================
+
+Implement:
+
+- request timeouts (frontend + backend)
+- retry logic (exponential backoff for critical calls)
+- loading states (skeletons, not spinners only)
+- error boundaries (React)
+- API error handling layer
+- graceful empty states
+
+Backend:
+- input validation (Zod)
+- safe error responses
+- no crashes on bad input
+- logs for key flows
+
+==================================================
+6. PERFORMANCE OPTIMIZATION
+==================================================
+
+Frontend:
+- route-based code splitting
+- memoization where needed
+- avoid unnecessary re-renders
+
+Backend:
+- index critical DB queries
+- avoid N+1 queries
+- cache lightweight computed data:
+  - ranking summaries
+  - comparison summaries
+
+Optional:
+- in-memory cache or simple TTL cache
+
+==================================================
+7. EXPLAINABILITY LAYER (CRITICAL FOR JURY)
+==================================================
+
+Add visible UI explanations:
+
+A. Ranking Explanation Panel
+- show:
+  - how score is computed
+  - which dimensions matter most
+  - consensus vs disagreement
+
+B. Lineage Visualization
+- clear path:
+  Original → Variation → Fork → Current
+- highlight:
+  - where the change happened
+
+C. Comparison Verdict Panel
+- “Which version is stronger and why”
+- derived from structured review data
+
+D. Review Transparency
+- show:
+  - reviewer roles
+  - score breakdown
+  - key critiques
+
+Goal:
+Judges must instantly understand:
+THIS IS NOT RANDOM AI — THIS IS STRUCTURED EVALUATION
+
+==================================================
+8. UI POLISH (JURY-READY)
+==================================================
+
+Refine:
+
+- spacing, typography, hierarchy
+- consistent card system
+- badges for:
+  - ranked
+  - forked
+  - in review
+- color system for scores:
+  - high = strong
+  - low = weak
+- hover states and transitions
+- responsive layout (desktop priority, tablet acceptable)
+
+Add:
+- empty states (meaningful, not blank)
+- tooltips for complex concepts
+- subtle onboarding hints (first-time user)
+
+==================================================
+9. ANALYTICS (LIGHTWEIGHT)
+==================================================
+
+Add simple tracking:
+
+- page views
+- create variation event
+- submit review event
+- fork event
+- compare view event
+
+Use:
+- PostHog OR simple logging layer
+
+Goal:
+Understand how judges interact with the system.
+
+==================================================
+10. LOGGING + OBSERVABILITY
+==================================================
+
+Backend:
+- structured logs:
+  - variation created
+  - review submitted
+  - ranking recomputed
+  - fork created
+- error logs with context
+
+Optional:
+- basic request logging middleware
+
+Frontend:
+- console-safe logging
+- optional debug mode
+
+==================================================
+11. DATA SAFETY FOR DEMO
+==================================================
+
+Ensure:
+
+- seed data always available
+- no destructive operations break demo
+- ability to reset DB (script)
+
+Add script:
+- db:reset:demo
+
+==================================================
+12. FINAL USER FLOW VALIDATION
+==================================================
+
+Test full journey:
+
+1. open app
+2. browse ranked variations
+3. open one
+4. fork it
+5. create new variation
+6. submit for review
+7. submit review
+8. see ranking update (manual or triggered)
+9. compare versions
+
+This must work smoothly without confusion.
+
+==================================================
+13. README + DEVPOST-READY DOC
+==================================================
+
+Update README with:
+
+- Vision
+- What it does (step-by-step flow)
+- Key features
+- Architecture (frontend + backend + DB)
+- How to run locally
+- Public demo URL
+
+Add:
+- “Why this matters” section:
+  narrative evaluation, film industry, creative intelligence
+
+==================================================
+14. DEMO SCRIPT (IMPORTANT)
+==================================================
+
+Add a short script file:
+
+knowledge/pitch/9-demo-script.md
+
+Include:
+- 60–90 second walkthrough
+- what to click
+- what to say
+- what to highlight
+
+==================================================
+15. DEPLOYMENT CHECKLIST
+==================================================
+
+Before finishing:
+
+- frontend deployed
+- backend deployed
+- DB connected
+- env vars set
+- API reachable
+- demo mode works
+- no console errors
+- no broken routes
+- mobile not broken (basic)
+
+==================================================
+16. NON-NEGOTIABLE RULES
+==================================================
+
+Do not:
+- break core flows
+- introduce random UI elements
+- leave obvious bugs
+- rely only on local environment
+- make the demo fragile
+
+Do:
+- prioritize clarity and stability
+- make system explainable
+- keep architecture clean
+- ensure reproducibility
+
+==================================================
+17. OUTPUT I WANT FROM YOU
+==================================================
+
+When finished, provide:
+
+1. public frontend URL
+2. backend URL (if needed)
+3. database setup used
+4. demo mode behavior
+5. key hardening features implemented
+6. analytics/logging added
+7. known limitations
+8. next steps for production scale
+
+Start now.
+Harden byDebut into a jury-ready, deployed, stable, and explainable system.
