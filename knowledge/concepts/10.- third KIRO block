@@ -1,0 +1,566 @@
+KIRO — THIRD MASTER INSTRUCTION BLOCK
+PROJECT: byDebut
+GOAL: Implement the first real backend foundation for byDebut with database schema, endpoint scaffolding, persistent storage layer, and full integration path from frontend to backend.
+
+IMPORTANT:
+This instruction comes after:
+1. frontend MVP core interaction flow
+2. backend-ready data model and API contract foundation
+
+Do not restart the project.
+Build on top of the existing frontend, typed domain models, mock service layer, API contracts, ranking utilities, and lineage logic.
+The goal now is to move byDebut from frontend architecture readiness to a real application foundation with a working backend and persistence model.
+
+This phase must preserve the product identity:
+byDebut is a structured narrative variation platform where a user changes one variable in a story, submits that variation into structured review, ranked versions emerge from multi-dimensional scoring, and strong ranked variations can be forked into new branches while preserving lineage.
+
+==================================================
+1. PRIMARY OBJECTIVE
+==================================================
+
+Implement the first real backend layer for byDebut, including:
+
+- database schema
+- ORM or persistence model
+- endpoint scaffolding
+- server-side validation
+- server-side ranking computation hooks
+- lineage persistence
+- integration-ready API handlers
+- frontend service swap path from mock services to real API calls
+
+This phase should produce a real application backbone, not only conceptual scaffolding.
+
+==================================================
+2. DECISION RULE FOR STACK
+==================================================
+
+Use the stack that best fits the existing workspace.
+
+Preferred paths:
+- If the project is already React/Vite frontend only:
+  create a clean backend app or server folder alongside it.
+- If a fullstack framework already exists in the repo:
+  extend it instead of creating parallel architecture.
+- If no backend exists and no constraints are present, use a straightforward production-friendly setup such as:
+  - Node.js
+  - TypeScript
+  - Express, Fastify, or Hono
+  - Prisma or Drizzle ORM
+  - SQLite for local development and demo persistence
+  - PostgreSQL-ready schema design for future production
+
+Important:
+Even if local demo storage uses SQLite, the schema and service design should remain production-oriented and easy to migrate to PostgreSQL.
+
+==================================================
+3. BACKEND SCOPE FOR THIS PHASE
+==================================================
+
+Implement a real backend for the core byDebut MVP flow:
+
+- stories
+- variations
+- reviews
+- creator responses
+- rankings
+- comparisons
+- lineage relationships
+
+At minimum, the backend must support:
+- read story and variation data
+- create new variations
+- update draft variations
+- submit variations for review
+- submit reviews
+- submit creator responses
+- list rankings
+- recompute rankings
+- fork variations
+- compare two variations
+
+==================================================
+4. DATABASE MODEL REQUIREMENTS
+==================================================
+
+Create a persistent schema for these entities:
+
+----------------------------------------
+A. USERS
+----------------------------------------
+Fields:
+- id
+- displayName
+- handle
+- role
+- avatarUrl nullable
+- createdAt
+- updatedAt
+
+----------------------------------------
+B. STORIES
+----------------------------------------
+Fields:
+- id
+- slug unique
+- title
+- description
+- originalVariationId nullable at creation time if needed
+- status
+- tags (json/text strategy acceptable)
+- createdAt
+- updatedAt
+
+----------------------------------------
+C. VARIATIONS
+----------------------------------------
+Fields:
+- id
+- storyId FK
+- title
+- slug
+- branchName
+- sourceVariationId nullable FK self-reference
+- forkParentId nullable FK self-reference
+- creatorId FK
+- status
+- reviewState
+- rankingState
+- confidenceLevel
+- variationSummary
+- whatChanged
+- immediateConsequences
+- longTermConsequences
+- deservesEvaluationReason
+- depth
+- path or lineagePath
+- forkCount
+- childCount or derive if preferred
+- submittedAt nullable
+- rankedAt nullable
+- createdAt
+- updatedAt
+
+Important:
+Preserve explicit self-referential lineage fields.
+Do not flatten the branch structure away.
+
+----------------------------------------
+D. VARIABLE_CHANGES
+----------------------------------------
+Fields:
+- id
+- variationId FK unique or one-to-one by design
+- label
+- changeType
+- clearDescription
+- whyItMatters
+- expectedEffects (json/text array)
+- preservedElements nullable
+- disruptedElements nullable
+- createdAt
+- updatedAt
+
+----------------------------------------
+E. REVIEWS
+----------------------------------------
+Fields:
+- id
+- variationId FK
+- reviewerId FK
+- reviewerLens
+- recommendation
+- strongestElement
+- weakestElement
+- instabilityPoint
+- preserveWhat
+- improvesOnSource
+- evidenceTags (json/text array)
+- overallScore
+- weightedOverallScore nullable or computed
+- submittedAt
+- createdAt
+- updatedAt
+
+----------------------------------------
+F. REVIEW_SCORES
+----------------------------------------
+If you prefer a separate table, use it. If not, place fields directly on REVIEWS.
+Required score dimensions:
+- narrativeCoherence
+- internalLogic
+- emotionalPower
+- originality
+- longTermSustainability
+- adaptationPotential
+
+----------------------------------------
+G. CREATOR_RESPONSES
+----------------------------------------
+Fields:
+- id
+- variationId FK
+- reviewId FK
+- creatorId FK
+- disposition
+- responseText
+- submittedAt
+- createdAt
+- updatedAt
+
+----------------------------------------
+H. RANKING_ENTRIES
+----------------------------------------
+Fields:
+- id
+- storyId FK
+- variationId FK unique per story ranking context
+- rank
+- overallScore
+- weightedScore
+- coherenceScore
+- originalityScore
+- stabilityScore
+- emotionalImpactScore
+- adaptationPotentialScore
+- reviewCount
+- forkCount
+- consensusLevel
+- debatedLevel
+- rankingReasonSummary
+- createdAt
+- updatedAt
+
+----------------------------------------
+I. COMPARISON_CACHE or COMPARISONS
+----------------------------------------
+Optional persistent table if useful.
+Fields may include:
+- id
+- storyId FK
+- leftVariationId FK
+- rightVariationId FK
+- comparisonType
+- keyDifferenceSummary
+- structuralGain
+- structuralLoss
+- emotionalShift
+- stabilityShift
+- reviewerVerdictSummary
+- createdAt
+- updatedAt
+
+==================================================
+5. SCHEMA RULES
+==================================================
+
+Add:
+- primary keys
+- foreign keys
+- uniqueness where appropriate
+- indexes for:
+  - storyId
+  - sourceVariationId
+  - forkParentId
+  - variationId on reviews
+  - storyId on ranking entries
+  - slug lookups
+
+Ensure the schema supports:
+- lineage lookup
+- ranking lookup
+- variation-by-story listing
+- compare pair retrieval
+
+==================================================
+6. MIGRATION AND SEEDING
+==================================================
+
+Set up:
+- migrations
+- local seed script
+- sample demo data load
+
+Seed at least:
+- 1 story
+- 1 original variation
+- 4+ variations
+- 2 ranked variations
+- several reviews
+- creator responses
+- one forked branch
+
+The seed data should reflect real byDebut usage and match the UI flows already built.
+
+==================================================
+7. API IMPLEMENTATION REQUIREMENTS
+==================================================
+
+Implement real endpoint handlers matching the contract work from the previous phase.
+
+At minimum support:
+
+GET    /stories
+GET    /stories/:storyId
+GET    /stories/:storyId/variations
+GET    /variations/:variationId
+POST   /variations
+PATCH  /variations/:variationId
+POST   /variations/:variationId/submit
+GET    /variations/:variationId/reviews
+POST   /reviews
+POST   /creator-responses
+GET    /stories/:storyId/rankings
+POST   /stories/:storyId/rankings/recompute
+POST   /variations/:variationId/fork
+GET    /compare?left=:id&right=:id
+
+Optional but recommended:
+GET    /variations/:variationId/lineage
+GET    /variations/:variationId/children
+
+==================================================
+8. REQUEST VALIDATION
+==================================================
+
+Use robust runtime validation.
+
+Preferred:
+- Zod
+or equivalent runtime schema validation
+
+Validate:
+- create variation payloads
+- patch variation payloads
+- review submission payloads
+- creator response payloads
+- fork payloads
+- ranking recompute inputs if any
+
+Return structured error responses for:
+- validation error
+- not found
+- invalid state transition
+- conflict
+
+==================================================
+9. BUSINESS RULE ENFORCEMENT
+==================================================
+
+Implement backend-side rules for:
+
+- incomplete variation cannot be submitted for review
+- variation cannot be ranked with zero reviews
+- creator response must belong to the variation’s creator context
+- fork requires valid parent variation
+- ranking recompute only applies to a valid story
+- lineage depth/path must be updated when forking
+- forkCount must be maintained consistently
+
+These rules must not exist only in the frontend.
+
+==================================================
+10. RANKING ENGINE SERVER INTEGRATION
+==================================================
+
+Move or mirror the ranking logic so it can run server-side.
+
+Required:
+- aggregate all completed reviews for a variation
+- compute weighted ranking score
+- compute consensus and debated level
+- write ranking entries to the database
+- update variation rankingState / rankedAt when appropriate
+
+You may expose ranking recomputation as:
+- manual endpoint for now
+- service callable from submit review flow later
+
+Document the chosen behavior.
+
+==================================================
+11. LINEAGE LOGIC SERVER INTEGRATION
+==================================================
+
+Implement server-side lineage support.
+
+Required capabilities:
+- get ancestor chain
+- get descendants or direct children
+- generate/maintain path for new forks
+- compute depth
+- preserve original/source relationships
+
+The backend should be the source of truth for lineage, not the frontend.
+
+==================================================
+12. SERVICE LAYER ON THE BACKEND
+==================================================
+
+Do not put business logic directly inside route handlers.
+
+Create a backend service structure such as:
+- story service
+- variation service
+- review service
+- creator response service
+- ranking service
+- comparison service
+- lineage service
+
+Route handlers should be thin.
+Services should hold business logic.
+
+==================================================
+13. FRONTEND INTEGRATION PATH
+==================================================
+
+After the backend exists, prepare the frontend to switch from mock services to real API calls.
+
+Implement:
+- API client layer
+- environment-based base URL
+- typed fetch wrappers
+- graceful fallback/error states if needed
+
+At minimum:
+- wire at least some key read paths to real backend endpoints if feasible
+- or build the real API client and swap mechanism clearly, even if full cutover is deferred
+
+Preferred target for this phase:
+- stories listing
+- variation detail fetch
+- ranking board fetch
+- create variation mutation
+- submit review mutation
+- fork variation mutation
+
+==================================================
+14. FILE/FOLDER STRUCTURE TARGET
+==================================================
+
+Adapt to the repo, but aim for clean separation such as:
+
+backend/
+  src/
+    app.ts
+    server.ts
+    routes/
+    services/
+    repositories/
+    db/
+      schema/
+      client/
+      seed/
+      migrations/
+    validation/
+    contracts/
+    utils/
+    errors/
+
+frontend/
+  src/
+    api/
+    services/
+    contracts/
+    ...
+
+If the current repo is single-app, organize equivalently without duplication.
+
+==================================================
+15. LOCAL RUN EXPERIENCE
+==================================================
+
+Provide a clean local development flow.
+
+I want to be able to:
+- install dependencies
+- run migrations
+- seed data
+- start backend
+- start frontend
+- use the app against the real backend locally
+
+Add helpful npm scripts such as:
+- dev
+- dev:frontend
+- dev:backend
+- db:migrate
+- db:seed
+- db:reset
+- build
+- typecheck
+- lint
+- test if present
+
+==================================================
+16. TESTING EXPECTATION
+==================================================
+
+Implement at least lightweight confidence checks.
+
+Recommended minimum:
+- validation/unit tests for key service logic
+- ranking computation test
+- fork lineage test
+- invalid transition tests
+
+If a test framework is already present, integrate with it.
+If not, add a lightweight setup without overengineering.
+
+==================================================
+17. DOCUMENTATION REQUIREMENT
+==================================================
+
+Add a backend architecture note in the repository, such as:
+
+knowledge/product/8-real-backend-foundation.md
+
+Document:
+- chosen backend stack
+- database schema overview
+- endpoint list
+- ranking flow
+- lineage persistence
+- how frontend connects to backend
+- what remains before production deployment
+
+==================================================
+18. NON-NEGOTIABLE RULES
+==================================================
+
+Do not:
+- keep persistence fake
+- store everything in a single giant JSON file
+- bury business rules only in frontend code
+- create endpoints that ignore the prior API contract
+- lose lineage relationships
+- lose ranking structure
+- introduce weak typing
+
+Do:
+- keep architecture production-oriented
+- preserve product meaning
+- keep contracts aligned
+- make the system locally runnable
+- make future PostgreSQL deployment straightforward
+
+==================================================
+19. OUTPUT I WANT FROM YOU
+==================================================
+
+When finished, provide:
+
+1. backend stack chosen and why
+2. database schema/entities implemented
+3. migrations and seed behavior
+4. endpoints created
+5. business rules enforced
+6. ranking integration behavior
+7. lineage persistence behavior
+8. frontend integration status
+9. local run instructions
+10. what remains for production hardening
+
+Start now.
+Implement the first real byDebut backend foundation with database schema, endpoint scaffolding, persistence, validation, business rules, ranking integration, lineage support, and frontend integration path.
