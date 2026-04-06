@@ -1,0 +1,460 @@
+Below is a **full pre-seed repair package**—tight, investor-ready, and engineered to convert your current concept into a fundable company with a clear wedge, fast proof, and a believable path to scale.
+
+---
+
+# 🧭 1) Revised Positioning (what you are)
+
+### One-liner
+
+**byDebut is version control and decision support for story development.**
+
+### Expanded
+
+byDebut helps creative teams **generate, compare, evaluate, and select** the strongest narrative direction **before production**, replacing chaotic rewrites and subjective debates with structured, auditable decisions.
+
+### Category
+
+* **Primary:** Collaborative development software (B2B SaaS)
+* **Secondary (later):** Creative intelligence platform
+
+### Why this works
+
+* Anchors to **workflow + ROI**
+* Easy mental model (“GitHub for story decisions” without saying GitHub)
+* Avoids “AI toy” positioning
+
+---
+
+# 🎯 2) ICP (Ideal Customer Profile)
+
+### Wedge ICP (start here)
+
+**YouTube narrative teams (10k–5M subs) producing weekly/bi-weekly story content**
+
+**Why this ICP**
+
+* High frequency → fast iteration → quick learning loops
+* Direct KPI link (retention, watch time)
+* Lower procurement friction vs. film studios
+* Already experimenting with hooks, arcs, and edits
+
+### Buyer persona
+
+* Channel owner / producer (economic buyer)
+* Head writer / editor (daily user)
+* Growth strategist (co-user)
+
+### Jobs-to-be-done
+
+* “We need to pick the strongest story direction **before we film/edit**.”
+* “We need alignment across writer/producer/editor **without endless calls**.”
+* “We need to test alternatives that could improve retention.”
+
+### Secondary ICP (next)
+
+* Indie film/script development teams
+* Creative agencies producing narrative campaigns
+
+---
+
+# 🧪 3) MVP Scope (what you build now)
+
+### Goal
+
+Deliver **one painful workflow** with immediate value in a single session.
+
+---
+
+## Core workflow (MVP v1)
+
+1. **Create baseline**
+
+   * Paste premise, outline, or script excerpt
+
+2. **Create 2–4 alternatives (branches)**
+
+   * Manual entry or assisted generation
+   * Each branch must include:
+
+     * “What changed”
+     * “Why it matters”
+
+3. **Side-by-side comparison**
+
+   * Baseline vs. branches
+   * Highlighted differences
+   * Short summaries
+
+4. **Structured evaluation**
+   Score each branch on:
+
+   * Emotional impact
+   * Clarity/coherence
+   * Audience fit
+   * Originality
+   * Production feasibility
+
+5. **Comments by role**
+
+   * Writer / Producer / Editor / Strategist tags
+
+6. **Weighted scoring + recommendation**
+
+   * Configurable weights by role
+   * System shows a recommended direction
+
+7. **Decision record**
+
+   * Selected branch
+   * Rationale snapshot
+   * Archived alternatives
+
+---
+
+## Hard constraints (critical)
+
+* Max **4 branches per decision round**
+* Every branch must have a **clear rationale**
+* Every round ends with:
+
+  * 1 selected
+  * 1 parked
+  * others rejected
+
+👉 This enforces **divergence → convergence**
+
+---
+
+## NOT in MVP
+
+* Public marketplace
+* Open community ranking
+* Creator economy features
+* Complex forking trees
+* Social feeds
+
+---
+
+## “Wow moment”
+
+> “We can finally compare story directions clearly and decide in minutes instead of arguing for hours.”
+
+---
+
+# 💰 4) Pricing (simple, credible, scalable)
+
+### Model
+
+**Team SaaS (per workspace + per seat)**
+
+---
+
+## Starter (solo creators)
+
+* $12–$20/month
+* Limited projects
+* Basic comparison + scoring
+
+---
+
+## Team (core plan)
+
+* $39–$79/user/month
+* Collaboration features
+* Role-based scoring
+* Decision history
+* Export/share
+
+---
+
+## Pro / Studio
+
+* $99–$149/user/month
+* Permissions & governance
+* Audit trail
+* Advanced weighting
+* Templates + analytics
+
+---
+
+## Enterprise (later)
+
+* Custom pricing
+* SSO
+* IP/legal controls
+* Dedicated environments
+
+---
+
+## Optional add-ons
+
+* AI credits (if needed)
+* External reviewer modules (phase 2)
+
+---
+
+# 🧱 5) Moat (how this becomes defensible)
+
+### Not the moat
+
+* LLM generation (commodity)
+
+---
+
+## Real moat layers
+
+### 1. Structured decision dataset
+
+You capture:
+
+* branches + variables changed
+* role-based scores
+* comments + rationale
+* final selections
+
+This becomes:
+
+> a proprietary dataset of **how creative decisions are made**
+
+---
+
+### 2. Decision intelligence
+
+Over time:
+
+* “Branches like this win more often”
+* “This team prefers X structure”
+* “This change correlates with higher retention”
+
+---
+
+### 3. Workflow embedment
+
+You become:
+
+* where decisions are made
+* where rationale is stored
+* where alignment happens
+
+High switching cost.
+
+---
+
+### 4. Provenance graph
+
+You know:
+
+* who contributed what
+* what improved outcomes
+* how ideas evolved
+
+---
+
+### 5. Future network layer (optional)
+
+* expert reviewers
+* talent discovery
+* branch marketplaces
+
+Only after internal workflow is strong.
+
+---
+
+# 📊 6) Metrics (what investors expect)
+
+### Early traction (pre-seed targets)
+
+#### Activation
+
+* % of users who create ≥2 branches in first session
+  Target: **>60%**
+
+#### Engagement
+
+* Avg branches per project
+  Target: **≥3**
+
+* Comments per branch
+  Target: **≥2–3**
+
+#### Retention
+
+* Weekly active teams / total teams
+  Target: **>40%**
+
+* Repeat project usage
+  Target: **≥2 projects per team/month**
+
+#### Value signal
+
+* % of decisions made using the platform
+  Target: **>70% of projects end with a selected branch**
+
+---
+
+### ROI metrics (powerful for investors)
+
+* Reduction in decision time (e.g., -30%)
+* Fewer revision cycles
+* Increased retention (YouTube KPI)
+* Faster production cycles
+
+---
+
+### Expansion signals
+
+* Seats per workspace growing
+* Cross-role adoption (writer + producer + editor)
+* Projects per team increasing
+
+---
+
+# 🧾 7) Product Architecture (simple but intentional)
+
+### Core objects
+
+* Project
+* Baseline
+* Branch
+* Variable change
+* Score
+* Comment
+* Role
+* Decision
+* Version lineage
+
+### Must-have features
+
+* Role-based permissions
+* Decision history
+* Exportable rationale
+* Audit trail (for IP clarity)
+
+---
+
+# ⚖️ 8) IP & Governance (investor-critical)
+
+### Default rule (private workspaces)
+
+* Workspace owner owns all outputs
+
+### Platform enforces:
+
+* contribution logs
+* timestamps
+* version lineage
+* terms acceptance
+
+### Why this matters
+
+Without this, studios/agencies won’t touch it.
+
+With this, you become:
+
+> enterprise-compatible creative infrastructure
+
+---
+
+# 🚀 9) Go-to-Market (focused, realistic)
+
+## Phase 1 (0 → first traction)
+
+* Direct outreach to YouTube narrative creators
+* Offer pilot access
+* Help them run real story decisions
+
+## Phase 2 (proof loops)
+
+* Publish case studies:
+
+  * “We tested 3 openings—this one increased retention”
+* Share side-by-side comparisons (sanitized)
+
+## Phase 3 (organic growth)
+
+* Collaboration invites (internal expansion)
+* Creator communities
+* Script labs / incubators
+
+---
+
+## Content strategy (important)
+
+* “How to choose the best story direction”
+* “Why most rewrites fail”
+* “3 narrative alternatives compared”
+* “What makes a strong hook”
+
+This content *demonstrates the product*.
+
+---
+
+# 🎤 10) Pitch Narrative (investor-ready)
+
+## Opening (problem)
+
+Creative teams waste weeks debating story directions across documents, calls, and subjective feedback. There is no structured way to compare alternatives or preserve decision rationale.
+
+---
+
+## Solution
+
+byDebut gives teams a system to generate, compare, evaluate, and select narrative options before production—turning chaotic rewrites into structured decisions.
+
+---
+
+## How it works
+
+Teams create a baseline, explore 2–4 alternatives, evaluate them across defined criteria, and select a direction with full decision history and alignment.
+
+---
+
+## Why now
+
+* Explosion of content production (YouTube, streaming, agencies)
+* Faster cycles require faster decisions
+* AI enables generation—but not **decision clarity**
+* Teams need structure, not more ideas
+
+---
+
+## Market entry
+
+We start with YouTube narrative teams where story quality directly impacts retention and revenue.
+
+---
+
+## Traction (what you’ll aim to show)
+
+* X teams using weekly
+* X projects per team
+* measurable reduction in decision time
+* repeat usage across projects
+
+---
+
+## Moat
+
+We are building a proprietary dataset of narrative decisions, role-based evaluations, and outcomes—creating a decision intelligence layer that improves over time.
+
+---
+
+## Vision (expanded carefully)
+
+Once embedded in team workflows, byDebut becomes the infrastructure for how stories are developed, evaluated, and evolved across the industry.
+
+---
+
+# 🧠 Final synthesis
+
+The fundable version of byDebut is:
+
+* **Not** a storytelling playground
+* **Not** a creative social network
+* **Not** an AI novelty
+
+It is:
+
+> **A professional decision system for story development, starting with a narrow wedge, proving workflow value, and building a data-driven creative intelligence layer over time.**
+
+
