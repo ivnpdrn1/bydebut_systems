@@ -1,0 +1,31 @@
+
+18. Modelo de variación generada
+
+{
+  "variationId": "var_001",
+  "workId": "hamlet_shakespeare",
+  "createdBy": "user_123",
+  "selectedChanges": [
+    {
+      "variableId": "hesitation_level",
+      "oldValue": 10,
+      "newValue": 2
+    }
+  ],
+  "generatedTitle": "Hamlet Without Delay",
+  "newPremise": "A decisive Hamlet moves quickly against corruption, trading introspection for immediate political rupture.",
+  "causalSummary": [
+    "The prince trusts his perception sooner.",
+    "He acts before court dynamics fully unfold.",
+    "Secondary tragedies are reduced, but political violence intensifies."
+  ],
+  "fullNarrative": "...",
+  "comparisonSummary": {
+    "themeShift": "from doubt to urgency",
+    "endingShift": "from tragic implosion to accelerated confrontation"
+  },
+  "ranking": {
+    "score": 0,
+    "votes": 0
+  }
+}
