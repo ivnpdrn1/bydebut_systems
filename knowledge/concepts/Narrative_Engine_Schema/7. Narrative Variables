@@ -1,0 +1,38 @@
+Este es el corazón de byDebut.
+
+Cada obra debe tener variables manipulables.
+
+{
+  "narrativeVariables": [
+    {
+      "variableId": "mercy_received",
+      "label": "Receives mercy early",
+      "description": "Whether the protagonist receives unexpected compassion at a key turning point.",
+      "type": "boolean",
+      "defaultValue": true,
+      "impactScope": ["character_arc", "moral_tone", "ending"],
+      "sensitivity": "high"
+    },
+    {
+      "variableId": "law_rigidity",
+      "label": "Rigidity of the law",
+      "description": "How flexible or unforgiving the justice system is.",
+      "type": "enum",
+      "allowedValues": ["low", "medium", "high"],
+      "defaultValue": "high",
+      "impactScope": ["world_conflict", "pacing", "ending"],
+      "sensitivity": "high"
+    },
+    {
+      "variableId": "guardian_bond_strength",
+      "label": "Strength of protective bond",
+      "description": "How strongly the protagonist commits to protecting another character.",
+      "type": "scale",
+      "min": 1,
+      "max": 10,
+      "defaultValue": 9,
+      "impactScope": ["character_arc", "relationship_arc"],
+      "sensitivity": "medium"
+    }
+  ]
+}
