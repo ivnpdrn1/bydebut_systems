@@ -1,0 +1,1016 @@
+Claro. Aquí tienes un **Narrative Engine Schema** pensado para byDebut, diseñado para que la plataforma no dependa de copiar texto protegido, sino de **modelar una obra como un sistema de variables, decisiones y consecuencias**.
+
+---
+
+# Narrative Engine Schema — byDebut
+
+## 1. Objetivo del motor
+
+El motor debe permitir:
+
+* tomar una obra base
+* identificar sus variables narrativas esenciales
+* permitir que el usuario cambie una o varias variables
+* generar un nuevo escenario coherente
+* comparar la nueva versión con la original
+* guardar, rankear y bifurcar versiones nuevas
+
+La lógica central no es “reescribir un libro”, sino:
+
+> **modelar un mundo narrativo y simular qué ocurre cuando cambia una condición relevante**
+
+---
+
+# 2. Estructura general del modelo
+
+Piensa cada obra como 7 capas:
+
+1. **Work Metadata**
+2. **World Model**
+3. **Character Model**
+4. **Narrative Variables**
+5. **Decision Graph**
+6. **Constraint Engine**
+7. **Generated Variation Output**
+
+---
+
+# 3. Schema conceptual
+
+```json
+{
+  "workId": "dracula_bram_stoker_1897",
+  "title": "Dracula",
+  "author": "Bram Stoker",
+  "sourceType": "public_domain",
+  "genre": ["gothic", "horror", "epistolary"],
+  "themes": ["fear", "seduction", "immortality", "control"],
+  "premise": "A powerful vampire threatens lives, order, and identity.",
+  "worldModel": {},
+  "characters": [],
+  "narrativeVariables": [],
+  "decisionGraph": {},
+  "constraints": {},
+  "variationTemplates": [],
+  "comparisonFramework": {},
+  "safetyRules": {},
+  "provenance": {}
+}
+```
+
+---
+
+# 4. Work Metadata
+
+Describe la obra como entidad base.
+
+```json
+{
+  "workId": "les_miserables_victor_hugo_1862",
+  "title": "Les Misérables",
+  "author": "Victor Hugo",
+  "year": 1862,
+  "sourceType": "public_domain",
+  "language": "fr",
+  "availableLocales": ["en", "es"],
+  "categories": ["classic", "social", "moral", "historical"],
+  "premise": "A man pursued by the law struggles to redeem his life through compassion and sacrifice."
+}
+```
+
+Campos clave:
+
+* `workId`: identificador único
+* `sourceType`: public_domain, original_user_content, licensed
+* `premise`: resumen abstracto, no copia literal
+* `categories`: útil para filtros en web
+
+---
+
+# 5. World Model
+
+Representa las reglas del mundo narrativo.
+
+```json
+{
+  "worldModel": {
+    "setting": {
+      "timePeriod": "19th_century",
+      "locations": ["Paris", "France"],
+      "socialContext": ["poverty", "justice_system", "class_inequality"]
+    },
+    "worldRules": [
+      "The legal system is rigid and punitive.",
+      "Social mobility is limited.",
+      "Compassion can radically alter human destiny."
+    ],
+    "tone": ["tragic", "hopeful", "moral"],
+    "stakes": ["freedom", "identity", "redemption", "survival"]
+  }
+}
+```
+
+Esto le permite al motor saber qué puede cambiar y qué define la identidad del mundo.
+
+---
+
+# 6. Character Model
+
+Cada personaje debe existir como entidad funcional, no solo como nombre.
+
+```json
+{
+  "characters": [
+    {
+      "characterId": "jean_valjean",
+      "name": "Jean Valjean",
+      "role": "protagonist",
+      "archetype": "redeemed_outcast",
+      "coreDrives": ["survival", "redemption", "protection"],
+      "fears": ["capture", "moral_failure"],
+      "initialState": {
+        "socialStatus": "criminalized",
+        "moralState": "conflicted",
+        "resources": "low"
+      },
+      "relationships": [
+        {
+          "targetCharacterId": "javert",
+          "relationshipType": "pursuer_vs_pursued",
+          "tensionLevel": 10
+        },
+        {
+          "targetCharacterId": "cosette",
+          "relationshipType": "protector",
+          "tensionLevel": 2
+        }
+      ],
+      "changeCapacity": "high"
+    }
+  ]
+}
+```
+
+Campos importantes:
+
+* `archetype`: útil para abstracción
+* `coreDrives`: qué mueve al personaje
+* `initialState`: punto de inicio
+* `relationships`: clave para cambios sistémicos
+* `changeCapacity`: cuánto puede transformarse sin romper coherencia
+
+---
+
+# 7. Narrative Variables
+
+Este es el corazón de byDebut.
+
+Cada obra debe tener variables manipulables.
+
+```json
+{
+  "narrativeVariables": [
+    {
+      "variableId": "mercy_received",
+      "label": "Receives mercy early",
+      "description": "Whether the protagonist receives unexpected compassion at a key turning point.",
+      "type": "boolean",
+      "defaultValue": true,
+      "impactScope": ["character_arc", "moral_tone", "ending"],
+      "sensitivity": "high"
+    },
+    {
+      "variableId": "law_rigidity",
+      "label": "Rigidity of the law",
+      "description": "How flexible or unforgiving the justice system is.",
+      "type": "enum",
+      "allowedValues": ["low", "medium", "high"],
+      "defaultValue": "high",
+      "impactScope": ["world_conflict", "pacing", "ending"],
+      "sensitivity": "high"
+    },
+    {
+      "variableId": "guardian_bond_strength",
+      "label": "Strength of protective bond",
+      "description": "How strongly the protagonist commits to protecting another character.",
+      "type": "scale",
+      "min": 1,
+      "max": 10,
+      "defaultValue": 9,
+      "impactScope": ["character_arc", "relationship_arc"],
+      "sensitivity": "medium"
+    }
+  ]
+}
+```
+
+Tipos recomendados:
+
+* `boolean`
+* `enum`
+* `scale`
+* `text_constraint`
+* `conditional_toggle`
+
+Cada variable debe indicar:
+
+* valor por defecto
+* alcance del impacto
+* sensibilidad narrativa
+
+---
+
+# 8. Decision Graph
+
+Mapea los puntos donde una decisión cambia el sistema.
+
+```json
+{
+  "decisionGraph": {
+    "nodes": [
+      {
+        "nodeId": "inciting_incident",
+        "label": "Initial crisis",
+        "type": "event",
+        "dependsOn": []
+      },
+      {
+        "nodeId": "moral_turning_point",
+        "label": "Moral turning point",
+        "type": "decision",
+        "dependsOn": ["inciting_incident"],
+        "affectedByVariables": ["mercy_received"]
+      },
+      {
+        "nodeId": "conflict_escalation",
+        "label": "Conflict escalation",
+        "type": "event",
+        "dependsOn": ["moral_turning_point"],
+        "affectedByVariables": ["law_rigidity", "guardian_bond_strength"]
+      },
+      {
+        "nodeId": "ending_resolution",
+        "label": "Ending resolution",
+        "type": "resolution",
+        "dependsOn": ["conflict_escalation"]
+      }
+    ],
+    "edges": [
+      {
+        "from": "inciting_incident",
+        "to": "moral_turning_point"
+      },
+      {
+        "from": "moral_turning_point",
+        "to": "conflict_escalation"
+      },
+      {
+        "from": "conflict_escalation",
+        "to": "ending_resolution"
+      }
+    ]
+  }
+}
+```
+
+Esto permite:
+
+* comparar versiones
+* ver dónde cambió la historia
+* explicar causalidad al usuario
+
+---
+
+# 9. Constraint Engine
+
+Evita salidas incoherentes.
+
+```json
+{
+  "constraints": {
+    "hardConstraints": [
+      "The generated variation must preserve the core genre identity unless the user explicitly changes genre.",
+      "The output must not reproduce copyrighted text.",
+      "Character actions must remain consistent with adjusted motivations."
+    ],
+    "softConstraints": [
+      "Maintain emotional coherence with the new variable set.",
+      "Preserve cause-and-effect clarity.",
+      "Avoid abrupt ending shifts without narrative bridge."
+    ],
+    "identityConstraints": {
+      "preserveCoreConflict": true,
+      "preserveThemeContinuity": true,
+      "allowToneShift": true
+    }
+  }
+}
+```
+
+Tipos:
+
+* `hardConstraints`: nunca romper
+* `softConstraints`: deseables
+* `identityConstraints`: preservan ADN de la obra
+
+---
+
+# 10. Variation Templates
+
+Sirven para guiar la generación.
+
+```json
+{
+  "variationTemplates": [
+    {
+      "templateId": "single_variable_shift",
+      "label": "Single Variable Shift",
+      "promptPattern": "Generate a new version of the narrative where only one key variable changes: {{variable_change}}. Preserve the core world logic and explain the resulting causal chain."
+    },
+    {
+      "templateId": "moral_inversion",
+      "label": "Moral Inversion",
+      "promptPattern": "Generate a variation where the protagonist's ethical orientation shifts from {{from}} to {{to}}, while maintaining a coherent world response."
+    },
+    {
+      "templateId": "constraint_removal",
+      "label": "Constraint Removal",
+      "promptPattern": "Generate a variation where the original structural constraint {{constraint}} is removed. Show how the world destabilizes or reorganizes."
+    }
+  ]
+}
+```
+
+---
+
+# 11. Comparison Framework
+
+Muy útil para la UI de byDebut.
+
+```json
+{
+  "comparisonFramework": {
+    "dimensions": [
+      "premise",
+      "character_arc",
+      "conflict_structure",
+      "moral_outcome",
+      "ending",
+      "theme_shift"
+    ],
+    "displayMode": ["side_by_side", "timeline", "causal_chain"],
+    "summaryQuestions": [
+      "What changed?",
+      "Why did it change?",
+      "What stayed the same?",
+      "What new meaning emerged?"
+    ]
+  }
+}
+```
+
+Esto alimenta pantallas como:
+
+* Original vs Variation
+* Before vs After
+* Why this new outcome emerged
+
+---
+
+# 12. Safety Rules
+
+Necesario para producción.
+
+```json
+{
+  "safetyRules": {
+    "forbidDirectTextReuse": true,
+    "forbidProtectedContentReconstruction": true,
+    "maxLiteralQuoteLength": 0,
+    "requireTransformativeOutput": true,
+    "flagIfUserInputContainsLargePastedSourceText": true
+  }
+}
+```
+
+---
+
+# 13. Provenance
+
+Para trazabilidad y defensa legal.
+
+```json
+{
+  "provenance": {
+    "baseSource": "Project Gutenberg",
+    "sourceUrl": "https://www.gutenberg.org/",
+    "adaptationMethod": "abstracted narrative modeling",
+    "lastReviewedAt": "2026-04-08",
+    "reviewStatus": "approved_for_public_domain_catalog"
+  }
+}
+```
+
+---
+
+# 14. Schema mínimo por obra
+
+Si quieres velocidad para MVP, cada obra puede arrancar con este mínimo:
+
+```json
+{
+  "workId": "hamlet_shakespeare",
+  "title": "Hamlet",
+  "premise": "A prince confronts grief, betrayal, and the burden of action.",
+  "themes": ["revenge", "doubt", "identity"],
+  "characters": [
+    {
+      "characterId": "hamlet",
+      "role": "protagonist",
+      "coreDrives": ["truth", "justice", "certainty"]
+    }
+  ],
+  "narrativeVariables": [
+    {
+      "variableId": "hesitation_level",
+      "type": "scale",
+      "min": 1,
+      "max": 10,
+      "defaultValue": 10
+    }
+  ],
+  "constraints": {
+    "hardConstraints": [
+      "Maintain causal coherence",
+      "Do not reproduce source text"
+    ]
+  }
+}
+```
+
+---
+
+# 15. Flujo del motor
+
+## Input
+
+* obra seleccionada
+* variables editadas por el usuario
+* tipo de transformación
+
+## Process
+
+* cargar schema de la obra
+* validar restricciones
+* recalcular decisión y consecuencias
+* generar outline
+* generar narrativa nueva
+* comparar con versión base
+
+## Output
+
+* título de la variación
+* resumen del nuevo escenario
+* cadena causal del cambio
+* nueva narrativa
+* comparación con la base
+* opción de votar, fork, guardar
+
+---
+
+# 16. Ejemplo real: Hamlet
+
+```json
+{
+  "workId": "hamlet_shakespeare",
+  "title": "Hamlet",
+  "premise": "A grieving prince must decide whether to act against corruption.",
+  "narrativeVariables": [
+    {
+      "variableId": "hesitation_level",
+      "label": "Hamlet hesitation",
+      "type": "scale",
+      "min": 1,
+      "max": 10,
+      "defaultValue": 10
+    },
+    {
+      "variableId": "ghost_reliability",
+      "label": "Reliability of the ghost",
+      "type": "enum",
+      "allowedValues": ["uncertain", "credible", "deceptive"],
+      "defaultValue": "uncertain"
+    }
+  ],
+  "decisionGraph": {
+    "nodes": [
+      { "nodeId": "ghost_message", "type": "event" },
+      { "nodeId": "hamlet_doubt", "type": "decision" },
+      { "nodeId": "public_action", "type": "decision" },
+      { "nodeId": "court_collapse", "type": "resolution" }
+    ]
+  }
+}
+```
+
+Ejemplo de cambio:
+
+* `hesitation_level = 2`
+* resultado: Hamlet actúa antes, reduce intriga interna, acelera colapso político, cambia tono y final.
+
+---
+
+# 17. Estructura de base de datos recomendada
+
+Para backend, separaría así:
+
+## `works`
+
+datos generales de la obra
+
+## `work_characters`
+
+personajes por obra
+
+## `work_variables`
+
+variables editables
+
+## `work_decision_nodes`
+
+nodos causales
+
+## `variations`
+
+versiones creadas por usuarios
+
+## `variation_votes`
+
+ranking
+
+## `variation_forks`
+
+bifurcaciones
+
+## `legal_sources`
+
+trazabilidad del origen
+
+---
+
+# 18. Modelo de variación generada
+
+```json
+{
+  "variationId": "var_001",
+  "workId": "hamlet_shakespeare",
+  "createdBy": "user_123",
+  "selectedChanges": [
+    {
+      "variableId": "hesitation_level",
+      "oldValue": 10,
+      "newValue": 2
+    }
+  ],
+  "generatedTitle": "Hamlet Without Delay",
+  "newPremise": "A decisive Hamlet moves quickly against corruption, trading introspection for immediate political rupture.",
+  "causalSummary": [
+    "The prince trusts his perception sooner.",
+    "He acts before court dynamics fully unfold.",
+    "Secondary tragedies are reduced, but political violence intensifies."
+  ],
+  "fullNarrative": "...",
+  "comparisonSummary": {
+    "themeShift": "from doubt to urgency",
+    "endingShift": "from tragic implosion to accelerated confrontation"
+  },
+  "ranking": {
+    "score": 0,
+    "votes": 0
+  }
+}
+```
+
+---
+
+# 19. Regla estratégica para byDebut
+
+La mejor arquitectura no es:
+
+* “subir un libro y reescribirlo”
+
+La mejor arquitectura es:
+
+* “seleccionar un mundo narrativo modelado”
+* “modificar variables”
+* “simular una nueva realidad”
+* “comparar, votar y forkear”
+
+Eso te da:
+
+* mejor UX
+* mejor defensa legal
+* más consistencia
+* más escalabilidad
+
+---
+
+# 20. Recomendación práctica para MVP
+
+Empieza con 5 obras:
+
+* Hamlet
+* Dracula
+* Frankenstein
+* Pride and Prejudice
+* Don Quixote
+
+Y para cada una define solo:
+
+* premisa
+* 3 personajes
+* 5 variables
+* 4 nodos causales
+* 3 plantillas de variación
+
+Con eso ya puedes mostrar una demo muy fuerte.
+
+Si quieres, el siguiente paso te lo puedo entregar ya armado como **JSON production-ready para 5 obras**, listo para KIRO o para tu backend.
+
+
+
+
+***********************************
+
+# byDebut — Narrative Engine (Public Domain Ready)
+
+---
+
+## 🧠 Overview
+
+byDebut is an identity-driven narrative engine that models stories as systems.
+
+Instead of rewriting books, the platform:
+
+* abstracts narrative structure
+* exposes key variables
+* simulates alternative outcomes
+* generates original narratives
+
+This ensures:
+
+* legal safety (no copyrighted text reuse)
+* infinite scalability
+* user-driven story evolution
+
+---
+
+## ⚖️ Legal Foundation
+
+The system is built on:
+
+* Public domain works (e.g. Project Gutenberg)
+* Original user-generated content
+* Narrative abstraction (NOT text reproduction)
+
+### Rules:
+
+* ❌ No direct text reuse
+* ❌ No Kindle/DRM sources
+* ✅ Only abstracted narrative structures
+* ✅ All generated output is original
+
+---
+
+## 📦 Repository Structure
+
+```
+/bydebut
+  /data
+    works.json
+    characters.json
+    variables.json
+    decision_graphs.json
+  /engine
+    narrative_engine.ts
+    constraint_engine.ts
+    variation_generator.ts
+  /api
+    create_variation.ts
+    get_work.ts
+  /ui
+    explore.tsx
+    variation_view.tsx
+  /legal
+    terms.md
+    content_policy.md
+  README.md
+```
+
+---
+
+## 🧩 Narrative Engine Schema
+
+### Core Structure
+
+```json
+{
+  "workId": "hamlet_shakespeare",
+  "title": "Hamlet",
+  "author": "William Shakespeare",
+  "sourceType": "public_domain",
+  "genre": ["tragedy"],
+  "themes": ["revenge", "doubt", "identity"],
+  "premise": "A prince confronts grief, betrayal, and the burden of action.",
+  "worldModel": {},
+  "characters": [],
+  "narrativeVariables": [],
+  "decisionGraph": {},
+  "constraints": {},
+  "variationTemplates": [],
+  "comparisonFramework": {},
+  "safetyRules": {},
+  "provenance": {}
+}
+```
+
+---
+
+## 🌍 World Model
+
+```json
+{
+  "worldModel": {
+    "setting": {
+      "timePeriod": "medieval",
+      "location": "Denmark"
+    },
+    "worldRules": [
+      "Royal authority defines justice",
+      "Revenge is morally ambiguous"
+    ],
+    "tone": ["dark", "psychological"],
+    "stakes": ["power", "truth", "revenge"]
+  }
+}
+```
+
+---
+
+## 👤 Character Model
+
+```json
+{
+  "characters": [
+    {
+      "characterId": "hamlet",
+      "role": "protagonist",
+      "archetype": "philosophical_prince",
+      "coreDrives": ["truth", "justice"],
+      "fears": ["uncertainty"],
+      "initialState": {
+        "mentalState": "conflicted"
+      },
+      "changeCapacity": "high"
+    }
+  ]
+}
+```
+
+---
+
+## 🎛️ Narrative Variables
+
+```json
+{
+  "narrativeVariables": [
+    {
+      "variableId": "hesitation_level",
+      "type": "scale",
+      "min": 1,
+      "max": 10,
+      "defaultValue": 10,
+      "impactScope": ["plot", "ending"]
+    },
+    {
+      "variableId": "ghost_reliability",
+      "type": "enum",
+      "allowedValues": ["low", "medium", "high"],
+      "defaultValue": "medium"
+    }
+  ]
+}
+```
+
+---
+
+## 🔗 Decision Graph
+
+```json
+{
+  "decisionGraph": {
+    "nodes": [
+      { "nodeId": "ghost_event", "type": "event" },
+      { "nodeId": "decision_point", "type": "decision" },
+      { "nodeId": "conflict", "type": "event" },
+      { "nodeId": "resolution", "type": "ending" }
+    ],
+    "edges": [
+      { "from": "ghost_event", "to": "decision_point" },
+      { "from": "decision_point", "to": "conflict" },
+      { "from": "conflict", "to": "resolution" }
+    ]
+  }
+}
+```
+
+---
+
+## ⚙️ Constraint Engine
+
+```json
+{
+  "constraints": {
+    "hardConstraints": [
+      "No copyrighted text reuse",
+      "Maintain causal coherence"
+    ],
+    "softConstraints": [
+      "Preserve emotional consistency"
+    ]
+  }
+}
+```
+
+---
+
+## 🧪 Variation Templates
+
+```json
+{
+  "variationTemplates": [
+    {
+      "templateId": "single_change",
+      "prompt": "Generate a new narrative where {{variable}} changes."
+    },
+    {
+      "templateId": "moral_inversion",
+      "prompt": "Invert the moral alignment of the protagonist."
+    }
+  ]
+}
+```
+
+---
+
+## 🔍 Comparison Framework
+
+```json
+{
+  "comparisonFramework": {
+    "dimensions": [
+      "premise",
+      "character_arc",
+      "ending"
+    ]
+  }
+}
+```
+
+---
+
+## 🛡️ Safety Rules
+
+```json
+{
+  "safetyRules": {
+    "noTextReuse": true,
+    "transformativeOnly": true
+  }
+}
+```
+
+---
+
+## 📚 Sample Works Dataset
+
+```json
+[
+  {
+    "workId": "hamlet",
+    "title": "Hamlet",
+    "variables": ["hesitation_level"]
+  },
+  {
+    "workId": "dracula",
+    "title": "Dracula",
+    "variables": ["vampire_nature"]
+  },
+  {
+    "workId": "frankenstein",
+    "title": "Frankenstein",
+    "variables": ["creator_responsibility"]
+  },
+  {
+    "workId": "pride_prejudice",
+    "title": "Pride and Prejudice",
+    "variables": ["first_impression_bias"]
+  },
+  {
+    "workId": "don_quixote",
+    "title": "Don Quixote",
+    "variables": ["perception_of_reality"]
+  }
+]
+```
+
+---
+
+## 🔁 Variation Object
+
+```json
+{
+  "variationId": "var_001",
+  "workId": "hamlet",
+  "changes": [
+    {
+      "variableId": "hesitation_level",
+      "newValue": 2
+    }
+  ],
+  "newPremise": "A decisive prince acts quickly.",
+  "causalSummary": [
+    "Faster action",
+    "Less internal conflict",
+    "Earlier climax"
+  ]
+}
+```
+
+---
+
+## 🔄 Engine Flow
+
+1. User selects work
+2. User modifies variables
+3. System validates constraints
+4. Decision graph recalculates
+5. Narrative is generated
+6. Comparison is displayed
+7. User can vote / fork
+
+---
+
+## 🚀 MVP Recommendation
+
+Start with 5 works:
+
+* Hamlet
+* Dracula
+* Frankenstein
+* Pride and Prejudice
+* Don Quixote
+
+Each with:
+
+* 3–5 variables
+* 3 characters
+* 4 decision nodes
+
+---
+
+## 📈 Strategic Advantage
+
+byDebut is not a content platform.
+
+It is:
+
+* a narrative simulation engine
+* a creative decision system
+* a scalable storytelling infrastructure
+
+---
+
+## ⚖️ Disclaimer
+
+This platform generates original narratives based on abstracted structures and does not reproduce copyrighted text.
+
+---
+
+## 🧭 Next Steps
+
+* Build API endpoints
+* Connect UI sliders to variables
+* Implement variation generator
+* Add ranking + fork system
+
+---
+
+END OF FILE
+
+
+
+
+
+
+
