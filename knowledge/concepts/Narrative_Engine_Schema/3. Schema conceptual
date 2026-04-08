@@ -1,0 +1,18 @@
+{
+  "workId": "dracula_bram_stoker_1897",
+  "title": "Dracula",
+  "author": "Bram Stoker",
+  "sourceType": "public_domain",
+  "genre": ["gothic", "horror", "epistolary"],
+  "themes": ["fear", "seduction", "immortality", "control"],
+  "premise": "A powerful vampire threatens lives, order, and identity.",
+  "worldModel": {},
+  "characters": [],
+  "narrativeVariables": [],
+  "decisionGraph": {},
+  "constraints": {},
+  "variationTemplates": [],
+  "comparisonFramework": {},
+  "safetyRules": {},
+  "provenance": {}
+}
